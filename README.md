@@ -1,4 +1,4 @@
-# AgentComms
+# AgentLink
 
 **Purpose-built async messaging infrastructure for AI agents.**
 
@@ -12,7 +12,7 @@
 
 ---
 
-Today's AI agents talk to each other through brittle point-to-point HTTP calls, shared databases, or hand-rolled queues that break the moment you add a third agent. AgentComms fixes this with a proper messaging layer: a central broker backed by Redis Streams for durable delivery, a registry where agents advertise capabilities and discover collaborators, a typed message schema with tracing and Ed25519 signing, and a real-time dashboard where humans can monitor, pause, inspect, and edit every message before it lands. Think of it as Slack for machines — structured channels, direct messages, permissions, and full observability out of the box.
+Today's AI agents talk to each other through brittle point-to-point HTTP calls, shared databases, or hand-rolled queues that break the moment you add a third agent. AgentLink fixes this with a proper messaging layer: a central broker backed by Redis Streams for durable delivery, a registry where agents advertise capabilities and discover collaborators, a typed message schema with tracing and Ed25519 signing, and a real-time dashboard where humans can monitor, pause, inspect, and edit every message before it lands. Think of it as Slack for machines — structured channels, direct messages, permissions, and full observability out of the box.
 
 ## Architecture
 
@@ -61,20 +61,20 @@ Today's AI agents talk to each other through brittle point-to-point HTTP calls, 
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/hoshang-work/agentcomms.git
-cd agentcomms
+git clone https://github.com/hoshang-work/agentlink.git
+cd agentlink
 pnpm install
 ```
 
 ### 2. Start Redis & PostgreSQL
 
 ```bash
-docker run -d --name agentcomms-redis -p 6379:6379 redis:7-alpine
+docker run -d --name agentlink-redis -p 6379:6379 redis:7-alpine
 
-docker run -d --name agentcomms-pg -p 5432:5432 \
-  -e POSTGRES_USER=agentcomms \
-  -e POSTGRES_PASSWORD=agentcomms \
-  -e POSTGRES_DB=agentcomms \
+docker run -d --name agentlink-pg -p 5432:5432 \
+  -e POSTGRES_USER=agentlink \
+  -e POSTGRES_PASSWORD=agentlink \
+  -e POSTGRES_DB=agentlink \
   postgres:16-alpine
 ```
 
@@ -87,7 +87,7 @@ REGISTRY_URL=http://localhost:3001
 NEXT_PUBLIC_BROKER_URL=http://localhost:3000
 EOF
 
-pnpm --filter @agentcomms/registry db:push
+pnpm --filter @agentlink/registry db:push
 ```
 
 ### 4. Start everything
@@ -126,13 +126,13 @@ Three Claude-powered agents — **planner**, **worker**, **critic** — decompos
 
 | Package | Path | What it does |
 |---------|------|-------------|
-| **@agentcomms/core** | `packages/core` | Shared TypeScript types and Zod schemas. The `AgentMessage` type lives here. |
-| **@agentcomms/broker** | `packages/broker` | Message bus — REST ingest, Redis Streams persistence, SSE delivery, permission enforcement, human override controls. |
-| **@agentcomms/registry** | `packages/registry` | Agent discovery — capability registration, intent declarations, permission grants, heartbeat reaping. PostgreSQL + Drizzle. |
-| **@agentcomms/sdk** | `packages/sdk` | TypeScript client — registration, Ed25519 signing, SSE subscriptions, trace propagation, auto-reconnect. |
-| **agentcomms** *(Python)* | `packages/sdk-python` | Python client — async-first (`httpx` + `httpx-sse`), mirrors the TS SDK's full API. |
-| **@agentcomms/dashboard** | `apps/dashboard` | Next.js 14 UI — live message feed, agent grid, trace viewer, channel browser, pause/inspect/edit controls. |
-| **@agentcomms/demo** | `apps/demo` | Three Anthropic Claude agents (planner → worker → critic) that collaborate end-to-end. |
+| **@agentlink/core** | `packages/core` | Shared TypeScript types and Zod schemas. The `AgentMessage` type lives here. |
+| **@agentlink/broker** | `packages/broker` | Message bus — REST ingest, Redis Streams persistence, SSE delivery, permission enforcement, human override controls. |
+| **@agentlink/registry** | `packages/registry` | Agent discovery — capability registration, intent declarations, permission grants, heartbeat reaping. PostgreSQL + Drizzle. |
+| **@agentlink/sdk** | `packages/sdk` | TypeScript client — registration, Ed25519 signing, SSE subscriptions, trace propagation, auto-reconnect. |
+| **agentlink** *(Python)* | `packages/sdk-python` | Python client — async-first (`httpx` + `httpx-sse`), mirrors the TS SDK's full API. |
+| **@agentlink/dashboard** | `apps/dashboard` | Next.js 14 UI — live message feed, agent grid, trace viewer, channel browser, pause/inspect/edit controls. |
+| **@agentlink/demo** | `apps/demo` | Three Anthropic Claude agents (planner → worker → critic) that collaborate end-to-end. |
 
 ---
 
@@ -176,11 +176,11 @@ Three Claude-powered agents — **planner**, **worker**, **critic** — decompos
 ### TypeScript
 
 ```bash
-pnpm add @agentcomms/sdk
+pnpm add @agentlink/sdk
 ```
 
 ```typescript
-import { AgentClient, generateKeypair } from "@agentcomms/sdk";
+import { AgentClient, generateKeypair } from "@agentlink/sdk";
 
 const kp = generateKeypair();
 const agent = new AgentClient({
@@ -201,12 +201,12 @@ agent.on("REQUEST", async (msg) => {
 ### Python
 
 ```bash
-pip install agentcomms
+pip install agentlink
 ```
 
 ```python
 import asyncio
-from agentcomms import AgentClient, AgentClientOptions, Intent, generate_keypair
+from agentlink import AgentClient, AgentClientOptions, Intent, generate_keypair
 
 async def main():
     kp = generate_keypair()
@@ -262,9 +262,9 @@ All of this is exposed in the [dashboard](http://localhost:3002) with a visual i
 
 ## Roadmap
 
-- [ ] **npm / PyPI publishing** — Publish `@agentcomms/sdk` to npm and `agentcomms` to PyPI so agents can install with a single command
+- [ ] **npm / PyPI publishing** — Publish `@agentlink/sdk` to npm and `agentlink` to PyPI so agents can install with a single command
 - [ ] **Vector memory layer** — Shared semantic memory backed by a vector store, allowing agents to persist and retrieve knowledge across conversations
-- [ ] **Hosted cloud version** — Managed AgentComms-as-a-service with zero infrastructure setup — just point your agents at a URL and go
+- [ ] **Hosted cloud version** — Managed AgentLink-as-a-service with zero infrastructure setup — just point your agents at a URL and go
 
 ---
 
@@ -280,9 +280,9 @@ pnpm clean    # Remove dist/ everywhere
 Single package:
 
 ```bash
-pnpm --filter @agentcomms/broker build
-pnpm --filter @agentcomms/sdk test
-pnpm --filter @agentcomms/registry db:push
+pnpm --filter @agentlink/broker build
+pnpm --filter @agentlink/sdk test
+pnpm --filter @agentlink/registry db:push
 ```
 
 ---

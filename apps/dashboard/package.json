@@ -1,5 +1,5 @@
 {
-  "name": "@agentcomms/dashboard",
+  "name": "@agentlink/dashboard",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@agentcomms/core": "workspace:*",
+    "@agentlink/core": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1",
     "next": "^14.2.0",
     "postcss": "^8.5.8",

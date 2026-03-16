@@ -1,4 +1,4 @@
-import type { AgentMessage } from "@agentcomms/core";
+import type { AgentMessage } from "@agentlink/core";
 
 /**
  * Permission row returned by the registry's GET /permissions/:agentId endpoint.

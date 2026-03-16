@@ -2,15 +2,15 @@
  * Global pause state and held-message queue backed by Redis.
  *
  * Keys:
- *   agentcomms:paused:global  — "1" when paused, absent otherwise
- *   agentcomms:held           — Redis List of JSON-serialized AgentMessages
+ *   agentlink:paused:global  — "1" when paused, absent otherwise
+ *   agentlink:held           — Redis List of JSON-serialized AgentMessages
  */
 
 import type Redis from "ioredis";
-import type { AgentMessage } from "@agentcomms/core";
+import type { AgentMessage } from "@agentlink/core";
 
-const PAUSE_KEY = "agentcomms:paused:global";
-const HELD_KEY = "agentcomms:held";
+const PAUSE_KEY = "agentlink:paused:global";
+const HELD_KEY = "agentlink:held";
 
 /** Check whether the global pause flag is set. */
 export async function isGloballyPaused(redis: Redis): Promise<boolean> {

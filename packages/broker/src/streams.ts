@@ -1,8 +1,8 @@
 import type Redis from "ioredis";
-import type { AgentMessage } from "@agentcomms/core";
+import type { AgentMessage } from "@agentlink/core";
 
 /** Prefix all stream keys to avoid collisions. */
-const STREAM_PREFIX = "agentcomms:stream:";
+const STREAM_PREFIX = "agentlink:stream:";
 
 /**
  * Derive the Redis Stream key for a message.

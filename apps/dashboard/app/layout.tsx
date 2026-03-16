@@ -3,8 +3,8 @@ import "./globals.css";
 import { Nav } from "./nav";
 
 export const metadata: Metadata = {
-  title: "AgentComms Dashboard",
-  description: "Observability dashboard for AgentComms",
+  title: "AgentLink Dashboard",
+  description: "Observability dashboard for AgentLink",
 };
 
 export default function RootLayout({

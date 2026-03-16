@@ -16,7 +16,7 @@ export function Nav() {
     <nav className="border-b border-gray-800 bg-gray-900">
       <div className="mx-auto flex max-w-7xl items-center gap-8 px-4 py-3">
         <Link href="/" className="text-lg font-bold text-white">
-          AgentComms
+          AgentLink
         </Link>
         <div className="flex gap-4">
           {links.map((l) => (

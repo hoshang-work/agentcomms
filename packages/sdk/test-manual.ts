@@ -1,5 +1,5 @@
 /**
- * Manual integration test for @agentcomms/sdk.
+ * Manual integration test for @agentlink/sdk.
  *
  * Prerequisites:
  *   - Redis running on localhost:6379

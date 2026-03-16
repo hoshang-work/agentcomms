@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type Redis from "ioredis";
-import { validate } from "@agentcomms/core";
+import { validate } from "@agentlink/core";
 import { publishMessage } from "../streams.js";
 import { fanoutPublish } from "../channels.js";
 import { checkPermission } from "../permissions.js";

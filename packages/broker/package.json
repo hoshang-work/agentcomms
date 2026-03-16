@@ -1,5 +1,5 @@
 {
-  "name": "@agentcomms/broker",
+  "name": "@agentlink/broker",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@agentcomms/core": "workspace:*",
+    "@agentlink/core": "workspace:*",
     "@fastify/cors": "^11.2.0",
     "fastify": "^5.2.0",
     "ioredis": "^5.4.0"

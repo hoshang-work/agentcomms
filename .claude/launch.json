@@ -4,7 +4,7 @@
     {
       "name": "dashboard",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@agentcomms/dashboard", "dev"],
+      "runtimeArgs": ["--filter", "@agentlink/dashboard", "dev"],
       "port": 3002,
       "autoPort": false
     }

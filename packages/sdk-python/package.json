@@ -1,5 +1,5 @@
 {
-  "name": "@agentcomms/sdk-python",
+  "name": "@agentlink/sdk-python",
   "version": "0.0.1",
   "private": true,
   "scripts": {

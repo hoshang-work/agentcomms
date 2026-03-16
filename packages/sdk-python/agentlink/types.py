@@ -1,4 +1,4 @@
-"""Shared types mirroring @agentcomms/core."""
+"""Shared types mirroring @agentlink/core."""
 
 from __future__ import annotations
 

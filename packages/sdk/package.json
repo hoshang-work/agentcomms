@@ -1,5 +1,5 @@
 {
-  "name": "@agentcomms/sdk",
+  "name": "@agentlink/sdk",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@agentcomms/core": "workspace:*",
+    "@agentlink/core": "workspace:*",
     "@noble/ed25519": "^2.2.0",
     "@noble/hashes": "^1.7.0",
     "eventsource": "^3.0.0"

@@ -1,4 +1,4 @@
-"""AgentClient — Python SDK for AgentComms, mirroring the TypeScript SDK."""
+"""AgentClient — Python SDK for AgentLink, mirroring the TypeScript SDK."""
 
 from __future__ import annotations
 
@@ -13,10 +13,10 @@ from typing import Any, Callable
 import httpx
 from httpx_sse import aconnect_sse
 
-from agentcomms.crypto import public_key_hex, sign_message
-from agentcomms.types import AgentClientOptions, AgentInfo, AgentMessage, Intent
+from agentlink.crypto import public_key_hex, sign_message
+from agentlink.types import AgentClientOptions, AgentInfo, AgentMessage, Intent
 
-logger = logging.getLogger("agentcomms")
+logger = logging.getLogger("agentlink")
 
 # ── Constants ───────────────────────────────────────────────────────────
 
@@ -26,7 +26,7 @@ _DEDUP_CACHE_SIZE = 500
 
 
 class AgentClient:
-    """Async Python client for the AgentComms broker and registry.
+    """Async Python client for the AgentLink broker and registry.
 
     Mirrors the TypeScript ``AgentClient`` API exactly:
     ``register()``, ``send()``, ``broadcast()``, ``on()``,

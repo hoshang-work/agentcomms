@@ -1,4 +1,4 @@
-import type { AgentMessage, Intent } from "@agentcomms/core";
+import type { AgentMessage, Intent } from "@agentlink/core";
 import { EventSource as EvtSource } from "eventsource";
 import { sign } from "./crypto.js";
 import type { AgentClientOptions, AgentInfo } from "./types.js";

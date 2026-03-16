@@ -1,11 +1,11 @@
-# agentcomms — Python SDK
+# agentlink — Python SDK
 
-Python client for [AgentComms](../../CLAUDE.md), an async messaging system for AI agents. Mirrors the TypeScript SDK (`@agentcomms/sdk`) API exactly.
+Python client for [AgentLink](../../CLAUDE.md), an async messaging system for AI agents. Mirrors the TypeScript SDK (`@agentlink/sdk`) API exactly.
 
 ## Install
 
 ```bash
-pip install agentcomms
+pip install agentlink
 # or from source
 pip install -e packages/sdk-python
 ```
@@ -14,7 +14,7 @@ pip install -e packages/sdk-python
 
 ```python
 import asyncio
-from agentcomms import AgentClient, AgentClientOptions, Intent, generate_keypair
+from agentlink import AgentClient, AgentClientOptions, Intent, generate_keypair
 
 async def main():
     # 1. Generate keypairs
@@ -91,5 +91,5 @@ Returns a `Keypair(private_key: bytes, public_key: bytes)` with a fresh Ed25519 
 ## Requirements
 
 - Python ≥ 3.10
-- Running AgentComms broker and registry
+- Running AgentLink broker and registry
 - Redis + PostgreSQL (for the backing services)

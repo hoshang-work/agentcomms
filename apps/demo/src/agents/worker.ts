@@ -7,8 +7,8 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
-import { AgentClient, generateKeypair } from "@agentcomms/sdk";
-import type { AgentMessage, Intent } from "@agentcomms/core";
+import { AgentClient, generateKeypair } from "@agentlink/sdk";
+import type { AgentMessage, Intent } from "@agentlink/core";
 import { ANTHROPIC_API_KEY, BROKER_URL, REGISTRY_URL } from "../config.js";
 
 const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });

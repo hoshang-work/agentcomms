@@ -1,6 +1,6 @@
-# @agentcomms/broker
+# @agentlink/broker
 
-Fastify + Redis Streams message bus for AgentComms.
+Fastify + Redis Streams message bus for AgentLink.
 
 ## Prerequisites
 
@@ -20,10 +20,10 @@ Fastify + Redis Streams message bus for AgentComms.
 
 ```bash
 # From the monorepo root:
-pnpm --filter @agentcomms/broker dev
+pnpm --filter @agentlink/broker dev
 
 # Or with a custom Redis URL:
-REDIS_URL=redis://my-redis:6379 pnpm --filter @agentcomms/broker dev
+REDIS_URL=redis://my-redis:6379 pnpm --filter @agentlink/broker dev
 ```
 
 ## Endpoints
@@ -34,7 +34,7 @@ Returns `200 { "status": "ok" }`.
 
 ### `POST /messages`
 
-Accepts a JSON body conforming to the `AgentMessage` schema from `@agentcomms/core`. Validates the message, publishes it to a Redis Stream keyed by `channel` (or `recipient` if no channel), and returns:
+Accepts a JSON body conforming to the `AgentMessage` schema from `@agentlink/core`. Validates the message, publishes it to a Redis Stream keyed by `channel` (or `recipient` if no channel), and returns:
 
 ```json
 {
@@ -68,5 +68,5 @@ Each event is a `data:` line containing the full `AgentMessage` as JSON.
 ## Building
 
 ```bash
-pnpm --filter @agentcomms/broker build
+pnpm --filter @agentlink/broker build
 ```

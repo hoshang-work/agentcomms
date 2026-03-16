@@ -9,7 +9,7 @@ cd "$(dirname "$0")"
 TASK="${1:?Usage: ./run.sh \"<task description>\"}"
 
 echo "═══════════════════════════════════════════════════"
-echo "  AgentComms Demo — 3 agents working together"
+echo "  AgentLink Demo — 3 agents working together"
 echo "═══════════════════════════════════════════════════"
 echo "  Task: $TASK"
 echo "  Broker: ${BROKER_URL:-http://localhost:3000}"

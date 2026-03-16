@@ -1,8 +1,8 @@
 import type Redis from "ioredis";
 
-const CHANNEL_HASH_PREFIX = "agentcomms:channel:";
-const CHANNEL_INDEX_KEY = "agentcomms:channels";
-const PUBSUB_PREFIX = "agentcomms:pubsub:";
+const CHANNEL_HASH_PREFIX = "agentlink:channel:";
+const CHANNEL_INDEX_KEY = "agentlink:channels";
+const PUBSUB_PREFIX = "agentlink:pubsub:";
 
 export interface ChannelMeta {
   name: string;

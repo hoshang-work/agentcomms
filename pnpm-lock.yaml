@@ -17,7 +17,7 @@ importers:
 
   apps/dashboard:
     dependencies:
-      '@agentcomms/core':
+      '@agentlink/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@tailwindcss/postcss':
@@ -51,10 +51,10 @@ importers:
 
   apps/demo:
     dependencies:
-      '@agentcomms/core':
+      '@agentlink/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@agentcomms/sdk':
+      '@agentlink/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
       '@anthropic-ai/sdk':
@@ -76,7 +76,7 @@ importers:
 
   packages/broker:
     dependencies:
-      '@agentcomms/core':
+      '@agentlink/core':
         specifier: workspace:*
         version: link:../core
       '@fastify/cors':
@@ -111,7 +111,7 @@ importers:
 
   packages/registry:
     dependencies:
-      '@agentcomms/core':
+      '@agentlink/core':
         specifier: workspace:*
         version: link:../core
       '@fastify/cors':
@@ -142,7 +142,7 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@agentcomms/core':
+      '@agentlink/core':
         specifier: workspace:*
         version: link:../core
       '@noble/ed25519':

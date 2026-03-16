@@ -1,5 +1,5 @@
 {
-  "name": "@agentcomms/registry",
+  "name": "@agentlink/registry",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -16,7 +16,7 @@
     "db:push": "drizzle-kit push --config=drizzle.config.ts"
   },
   "dependencies": {
-    "@agentcomms/core": "workspace:*",
+    "@agentlink/core": "workspace:*",
     "@fastify/cors": "^11.2.0",
     "drizzle-orm": "^0.38.0",
     "fastify": "^5.2.0",

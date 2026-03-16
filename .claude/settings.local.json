@@ -2,11 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(pnpm install:*)",
-      "Bash(pnpm --filter @agentcomms/core test)",
-      "Bash(pnpm --filter @agentcomms/core build)",
-      "Bash(pnpm --filter @agentcomms/broker build)",
+      "Bash(pnpm --filter @agentlink/core test)",
+      "Bash(pnpm --filter @agentlink/core build)",
+      "Bash(pnpm --filter @agentlink/broker build)",
       "Bash(pnpm dev:*)",
-      "Bash(pnpm --filter @agentcomms/registry build)",
+      "Bash(pnpm --filter @agentlink/registry build)",
       "mcp__Claude_Preview__preview_start",
       "Bash(lsof -ti:3000,3001,3100)",
       "Bash(xargs kill:*)",
@@ -24,7 +24,11 @@
       "Bash(curl -s -I -X OPTIONS -H \"Origin: http://localhost:3002\" -H \"Access-Control-Request-Method: GET\" \"http://localhost:3000/messages/subscribe?agentId=agent://dashboard-observer\")",
       "Bash(./run.sh \"Write a short report on the future of AI agents\")",
       "Bash(curl -s http://localhost:3000/channels)",
-      "Bash(curl -s http://localhost:3001/agents)"
+      "Bash(curl -s http://localhost:3001/agents)",
+      "Bash(npm show:*)",
+      "Bash(for pkg:*)",
+      "Bash(do echo:*)",
+      "Bash(done)"
     ]
   }
 }
