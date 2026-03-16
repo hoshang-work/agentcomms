@@ -1,55 +1,54 @@
-<p align="center">
-  <h1 align="center">AgentComms</h1>
-  <p align="center"><strong>Async messaging for AI agents — like Slack, but for machines.</strong></p>
-</p>
+# AgentComms
 
-<p align="center">
+**Purpose-built async messaging infrastructure for AI agents.**
+
+<p>
   <a href="#quickstart">Quickstart</a> &middot;
   <a href="#packages">Packages</a> &middot;
   <a href="#build-your-own-agent">Build an Agent</a> &middot;
   <a href="#human-override-controls">Human Override</a> &middot;
-  <a href="#contributing">Contributing</a>
+  <a href="#roadmap">Roadmap</a>
 </p>
 
 ---
 
-AgentComms is a purpose-built communication infrastructure that lets autonomous AI agents discover each other, exchange structured messages, and collaborate on complex tasks in real time. Instead of brittle point-to-point HTTP calls, agents connect through a central message broker backed by Redis Streams, register their capabilities in a shared registry, and communicate using a well-defined message schema with built-in tracing, priorities, and cryptographic signing. A Next.js observability dashboard lets humans monitor every message, inspect agent status, and pause the entire system with a single click.
+Today's AI agents talk to each other through brittle point-to-point HTTP calls, shared databases, or hand-rolled queues that break the moment you add a third agent. AgentComms fixes this with a proper messaging layer: a central broker backed by Redis Streams for durable delivery, a registry where agents advertise capabilities and discover collaborators, a typed message schema with tracing and Ed25519 signing, and a real-time dashboard where humans can monitor, pause, inspect, and edit every message before it lands. Think of it as Slack for machines — structured channels, direct messages, permissions, and full observability out of the box.
 
 ## Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                                                                        │
-│   ┌───────────┐  POST /messages   ┌───────────────┐                   │
-│   │  Agent A   │ ────────────────▶│               │  Redis Streams    │
-│   │  (TS SDK)  │                  │    Broker     │ ──────────────▶   │
-│   │            │◀── SSE ─────────│   :3000       │                   │
-│   └───────────┘                  │               │◀── XREAD ──────   │
-│                                   │  ┌─────────┐ │                   │
-│   ┌───────────┐  POST /messages   │  │  Redis  │ │  Redis Pub/Sub   │
-│   │  Agent B   │ ────────────────▶│  └─────────┘ │ ──────────────▶   │
-│   │  (Py SDK)  │                  │               │                   │
-│   │            │◀── SSE ─────────│               │                   │
-│   └───────────┘                  └───────┬───────┘                   │
-│                                          │ permission check           │
-│                                          ▼                            │
-│   ┌───────────┐  POST /agents    ┌───────────────┐                   │
-│   │  Agent C   │ ───────────────▶│   Registry    │                   │
-│   │  (TS SDK)  │                  │   :3001       │                   │
-│   │            │◀── GET /agents ─│  ┌──────────┐│                   │
-│   └───────────┘                  │  │ Postgres ││                   │
-│                                   │  └──────────┘│                   │
-│   ┌──────────────────────┐       └───────────────┘                   │
-│   │  Dashboard  :3002     │◀── SSE + REST ──────┘                    │
-│   │  (Next.js 14)         │                                           │
-│   │  pause / resume /     │                                           │
-│   │  inspect / edit       │                                           │
-│   └──────────────────────┘                                           │
-│                                                                        │
-└────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                     │
+│  ┌───────────┐                    ┌───────────────┐                 │
+│  │  Agent A   │── POST /messages ▶│               │                 │
+│  │  (TS SDK)  │◀──── SSE ────────│   Broker      │◀── Redis ──┐   │
+│  └───────────┘                   │   :3000       │            │   │
+│                                   │               │── Streams ─┘   │
+│  ┌───────────┐                   │               │── Pub/Sub ──▶  │
+│  │  Agent B   │── POST /messages ▶│               │                 │
+│  │  (Py SDK)  │◀──── SSE ────────└───────┬───────┘                 │
+│  └───────────┘                           │                          │
+│                                   permission check                  │
+│                                           │                          │
+│  ┌───────────┐                    ┌──────▼────────┐                 │
+│  │  Agent C   │── POST /agents ──▶│   Registry    │                 │
+│  │  (TS SDK)  │◀── GET /agents ──│   :3001       │                 │
+│  └───────────┘                   │   (Postgres)  │                 │
+│                                    └──────┬────────┘                 │
+│                                           │                          │
+│                                    ┌──────▼────────┐                 │
+│                                    │   Dashboard   │                 │
+│                                    │   :3002       │                 │
+│                                    │  (Next.js 14) │                 │
+│                                    │               │                 │
+│                                    │  pause/resume │                 │
+│                                    │  inspect/edit │                 │
+│                                    └───────────────┘                 │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
-Agents register with the **Registry** on startup, then send messages through the **Broker**. The Broker validates every message against the `AgentMessage` schema, checks permissions with the Registry, and publishes to Redis Streams. Subscribers receive messages in real time via Server-Sent Events. Channel broadcasts also fan out through Redis Pub/Sub for instant delivery.
+**How it works:** Agents register with the **Registry**, then exchange messages through the **Broker**. The Broker validates every message against the `AgentMessage` Zod schema, checks sender permissions via the Registry, persists to Redis Streams, and delivers to subscribers over SSE. Channel broadcasts fan out instantly via Redis Pub/Sub. The **Dashboard** taps into all three to give humans full visibility and control.
 
 ---
 
@@ -57,16 +56,7 @@ Agents register with the **Registry** on startup, then send messages through the
 
 ### Prerequisites
 
-| Tool | Version |
-|------|---------|
-| Node.js | >= 18 |
-| pnpm | >= 9 |
-| Docker | any recent version |
-
-```bash
-# Enable pnpm if you haven't already
-corepack enable && corepack prepare pnpm@latest --activate
-```
+- **Node.js** >= 18 &nbsp;&middot;&nbsp; **pnpm** >= 9 &nbsp;&middot;&nbsp; **Docker**
 
 ### 1. Clone & install
 
@@ -76,13 +66,11 @@ cd agentcomms
 pnpm install
 ```
 
-### 2. Start Docker dependencies
+### 2. Start Redis & PostgreSQL
 
 ```bash
-# Redis — powers the broker's message streams and pub/sub
 docker run -d --name agentcomms-redis -p 6379:6379 redis:7-alpine
 
-# PostgreSQL — stores agent registrations and permissions
 docker run -d --name agentcomms-pg -p 5432:5432 \
   -e POSTGRES_USER=agentcomms \
   -e POSTGRES_PASSWORD=agentcomms \
@@ -93,90 +81,62 @@ docker run -d --name agentcomms-pg -p 5432:5432 \
 ### 3. Configure & migrate
 
 ```bash
-# Create your environment file
 cat > .env << 'EOF'
 BROKER_URL=http://localhost:3000
 REGISTRY_URL=http://localhost:3001
 NEXT_PUBLIC_BROKER_URL=http://localhost:3000
 EOF
 
-# Push the database schema
 pnpm --filter @agentcomms/registry db:push
 ```
 
-### 4. Start all services
+### 4. Start everything
 
 ```bash
 pnpm dev
 ```
 
-This launches via Turborepo:
+| Service       | Port | Stack                   |
+|---------------|------|-------------------------|
+| **Broker**    | 3000 | Fastify + Redis Streams |
+| **Registry**  | 3001 | Fastify + PostgreSQL    |
+| **Dashboard** | 3002 | Next.js 14 + Tailwind   |
 
-| Service | Port | Stack |
-|---------|------|-------|
-| **Broker** | 3000 | Fastify + Redis Streams |
-| **Registry** | 3001 | Fastify + PostgreSQL |
-| **Dashboard** | 3002 | Next.js 14 + Tailwind |
-
-Open **[http://localhost:3002](http://localhost:3002)** to see the dashboard.
+Open **[localhost:3002](http://localhost:3002)** to see the dashboard.
 
 ### 5. Run the demo
-
-In a second terminal:
 
 ```bash
 cd apps/demo
 
-# Add your Anthropic API key
 cat > .env << 'EOF'
-ANTHROPIC_API_KEY=sk-ant-...your-key-here...
+ANTHROPIC_API_KEY=sk-ant-...your-key...
 BROKER_URL=http://localhost:3000
 REGISTRY_URL=http://localhost:3001
 EOF
 
-chmod +x run.sh
 ./run.sh "Write a short report on the future of AI agents"
 ```
 
-Three Claude-powered agents — **planner**, **worker**, and **critic** — will collaborate to decompose the task, execute subtasks in parallel, and review the combined output. Watch the messages flow live in the dashboard.
+Three Claude-powered agents — **planner**, **worker**, **critic** — decompose the task, execute subtasks in parallel, and review the output. Watch it happen live in the dashboard.
 
 ---
 
 ## Packages
 
-| Package | Path | Description |
+| Package | Path | What it does |
 |---------|------|-------------|
-| **@agentcomms/core** | `packages/core` | Shared TypeScript types and Zod validation schemas. The `AgentMessage` type that every message conforms to lives here. |
-| **@agentcomms/broker** | `packages/broker` | The message bus. Accepts messages via REST, persists them in Redis Streams, and delivers them to subscribers via SSE. Enforces permissions and supports human override (pause/resume/inspect). |
-| **@agentcomms/registry** | `packages/registry` | Agent discovery service. Agents register capabilities and accepted intents; other agents query by capability to find collaborators. PostgreSQL + Drizzle ORM. Includes a heartbeat reaper for offline detection. |
-| **@agentcomms/sdk** | `packages/sdk` | TypeScript client library. Registration, Ed25519 message signing, SSE subscription, trace propagation, and automatic reconnection with exponential backoff. |
-| **agentcomms** *(Python)* | `packages/sdk-python` | Python client library. Async-first with `httpx` + `httpx-sse`, mirroring the TypeScript SDK's full API surface. |
-| **@agentcomms/dashboard** | `apps/dashboard` | Next.js 14 observability UI. Live message feed, agent status grid, trace viewer, channel browser, and human override controls. |
-| **@agentcomms/demo** | `apps/demo` | Three demo agents using the Anthropic Claude API — a planner, a worker, and a critic that collaborate end-to-end. |
+| **@agentcomms/core** | `packages/core` | Shared TypeScript types and Zod schemas. The `AgentMessage` type lives here. |
+| **@agentcomms/broker** | `packages/broker` | Message bus — REST ingest, Redis Streams persistence, SSE delivery, permission enforcement, human override controls. |
+| **@agentcomms/registry** | `packages/registry` | Agent discovery — capability registration, intent declarations, permission grants, heartbeat reaping. PostgreSQL + Drizzle. |
+| **@agentcomms/sdk** | `packages/sdk` | TypeScript client — registration, Ed25519 signing, SSE subscriptions, trace propagation, auto-reconnect. |
+| **agentcomms** *(Python)* | `packages/sdk-python` | Python client — async-first (`httpx` + `httpx-sse`), mirrors the TS SDK's full API. |
+| **@agentcomms/dashboard** | `apps/dashboard` | Next.js 14 UI — live message feed, agent grid, trace viewer, channel browser, pause/inspect/edit controls. |
+| **@agentcomms/demo** | `apps/demo` | Three Anthropic Claude agents (planner → worker → critic) that collaborate end-to-end. |
 
 ---
 
 ## Message Schema
-
-Every message conforms to the `AgentMessage` type, validated at the broker with Zod:
-
-```typescript
-interface AgentMessage {
-  id:        string   // UUID — unique message identifier
-  trace_id:  string   // UUID — groups related messages into a conversation
-  sender:    string   // "agent://<name>" — who sent it
-  recipient: string   // "agent://<name>" or "channel://<name>"
-  channel?:  string   // Present on broadcast messages
-  intent:    Intent   // REQUEST | RESPONSE | BROADCAST | ERROR | HEARTBEAT
-  priority:  number   // 1 (lowest) to 5 (highest)
-  ttl:       number   // Time-to-live in seconds
-  payload:   unknown  // Arbitrary JSON body
-  timestamp: number   // Unix epoch in milliseconds
-  signature: string   // Ed25519 signature
-}
-```
-
-### Example
 
 ```json
 {
@@ -192,19 +152,22 @@ interface AgentMessage {
     "subtask": "Research current trends in AI agent technology"
   },
   "timestamp": 1710500000000,
-  "signature": "a3f2b1c0d9e8f7a6b5c4d3e2f1..."
+  "signature": "a3f2b1c0d9e8f7a6..."
 }
 ```
 
-### Intents
-
-| Intent | Description |
-|--------|-------------|
-| `REQUEST` | Direct request to another agent |
-| `RESPONSE` | Reply to a previous `REQUEST` |
-| `BROADCAST` | Fan-out to all channel subscribers |
-| `ERROR` | Error notification |
-| `HEARTBEAT` | Periodic liveness signal |
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | UUID | Unique message identifier |
+| `trace_id` | UUID | Groups related messages into a conversation chain |
+| `sender` | `agent://<name>` | Who sent it |
+| `recipient` | `agent://<name>` or `channel://<name>` | Where it's going |
+| `intent` | `REQUEST` · `RESPONSE` · `BROADCAST` · `ERROR` · `HEARTBEAT` | Message type |
+| `priority` | 1–5 | 1 = lowest, 5 = highest |
+| `ttl` | seconds | Time-to-live |
+| `payload` | any JSON | The message body |
+| `timestamp` | ms epoch | When it was created |
+| `signature` | string | Ed25519 signature |
 
 ---
 
@@ -266,47 +229,55 @@ async def main():
 asyncio.run(main())
 ```
 
-### SDK Reference
+### SDK Methods
 
 | Method | Description |
 |--------|-------------|
 | `register(capabilities, intents)` | Announce your agent to the registry |
 | `send(recipient, intent, payload)` | Send a direct message |
 | `broadcast(channel, intent, payload)` | Publish to a channel |
-| `on(intent, handler)` | Subscribe to messages by intent (opens SSE automatically) |
-| `withTrace(traceId)` | Pin all outgoing messages to a trace ID |
+| `on(intent, handler)` | Subscribe by intent (auto-opens SSE) |
+| `withTrace(traceId)` | Pin outgoing messages to a trace |
 | `discover(capability)` | Find agents by capability |
-| `disconnect()` | Close the SSE connection and clean up |
+| `disconnect()` | Close SSE and clean up |
 
 ---
 
 ## Human Override Controls
 
-The broker includes a global pause mechanism that lets a human operator intercept, inspect, edit, and release messages before they reach their destination.
+The broker includes a global kill switch. Pause the system, and every new message is held in a queue for human review. Inspect payloads, edit them, release individually, or discard the batch.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/override/pause` | POST | Pause all delivery — new messages are queued |
-| `/override/resume` | POST | Flush held queue and resume |
-| `/override/discard` | POST | Discard all held messages (stays paused) |
-| `/override/status` | GET | Returns `{ paused, heldCount }` |
-| `/override/held` | GET | Returns the full held message queue |
-| `/override/release/:id` | POST | Release one message, optionally with modified payload |
+| `/override/pause` | POST | Pause delivery — messages queue up |
+| `/override/resume` | POST | Flush held queue, resume delivery |
+| `/override/discard` | POST | Drop all held messages, stay paused |
+| `/override/status` | GET | `{ paused, heldCount }` |
+| `/override/held` | GET | Full held message array |
+| `/override/release/:id` | POST | Release one message (optionally with edited payload) |
 
-The [dashboard](http://localhost:3002) exposes these controls through a visual interface — pause the system, click into any held message, edit its payload, and release it.
+All of this is exposed in the [dashboard](http://localhost:3002) with a visual inspect/edit interface.
+
+---
+
+## Roadmap
+
+- [ ] **npm / PyPI publishing** — Publish `@agentcomms/sdk` to npm and `agentcomms` to PyPI so agents can install with a single command
+- [ ] **Vector memory layer** — Shared semantic memory backed by a vector store, allowing agents to persist and retrieve knowledge across conversations
+- [ ] **Hosted cloud version** — Managed AgentComms-as-a-service with zero infrastructure setup — just point your agents at a URL and go
 
 ---
 
 ## Development
 
 ```bash
-pnpm build          # Build all packages (respects dependency order)
-pnpm dev            # Start all services in watch mode
-pnpm test           # Run all test suites
-pnpm clean          # Remove all dist/ directories
+pnpm build    # Build all packages (dependency-aware)
+pnpm dev      # Watch mode — all services
+pnpm test     # Run all test suites
+pnpm clean    # Remove dist/ everywhere
 ```
 
-Work on a single package:
+Single package:
 
 ```bash
 pnpm --filter @agentcomms/broker build
@@ -318,21 +289,14 @@ pnpm --filter @agentcomms/registry db:push
 
 ## Contributing
 
-Contributions are welcome! Here's how to get started:
+1. **Fork** and branch from `main`
+2. **`pnpm install`** — this is a pnpm workspace, do not use npm or yarn
+3. **Follow conventions** — TypeScript strict mode, all communication through the broker, messages conform to `AgentMessage`
+4. **Test** — `pnpm test` must pass
+5. **Build** — `pnpm build` must compile with zero errors
+6. **PR** — open against `main` with a clear description
 
-1. **Fork** the repo and create a feature branch from `main`.
-2. **Install dependencies** with `pnpm install` — this is a pnpm workspace, do not use npm or yarn.
-3. **Follow existing conventions** — TypeScript strict mode everywhere, all inter-agent communication goes through the broker (no direct service-to-service calls), and every message must conform to `AgentMessage` from `@agentcomms/core`.
-4. **Write tests** — run `pnpm test` to make sure everything passes.
-5. **Build** — run `pnpm build` to verify the full workspace compiles with zero errors.
-6. **Open a PR** against `main` with a clear description of what changed and why.
-
-### Guidelines
-
-- Keep PRs focused — one feature or fix per PR.
-- New broker endpoints should include permission checks where appropriate.
-- New SDK methods should be added to both the TypeScript and Python clients.
-- Dashboard changes should work with Tailwind CSS v4 (no custom CSS unless necessary).
+**Guidelines:** One feature per PR. New broker endpoints need permission checks. New SDK methods go in both TypeScript and Python. Dashboard uses Tailwind v4.
 
 ---
 
