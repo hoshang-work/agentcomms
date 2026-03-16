@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "Bash(pnpm --filter @agentcomms/core test)",
+      "Bash(pnpm --filter @agentcomms/core build)",
+      "Bash(pnpm --filter @agentcomms/broker build)",
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm --filter @agentcomms/registry build)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(lsof -ti:3000,3001,3100)",
+      "Bash(xargs kill:*)",
+      "Bash(python3 -m json.tool)",
+      "Bash(lsof -ti:3000,3001)",
+      "Bash(npx vitest:*)",
+      "Bash(npx tsx:*)",
+      "Bash(lsof -ti:3000)",
+      "Bash(lsof -ti:3001)",
+      "Bash(python3 -m pip install --user httpx httpx-sse pynacl)",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(curl -s http://localhost:3002 -o /dev/null -w \"Dashboard HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s -I -H \"Origin: http://localhost:3002\" \"http://localhost:3000/messages/subscribe?agentId=agent://dashboard-observer\")",
+      "Bash(curl -s -I -X OPTIONS -H \"Origin: http://localhost:3002\" -H \"Access-Control-Request-Method: GET\" \"http://localhost:3000/messages/subscribe?agentId=agent://dashboard-observer\")",
+      "Bash(./run.sh \"Write a short report on the future of AI agents\")",
+      "Bash(curl -s http://localhost:3000/channels)",
+      "Bash(curl -s http://localhost:3001/agents)"
+    ]
+  }
+}

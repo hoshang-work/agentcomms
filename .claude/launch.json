@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@agentcomms/dashboard", "dev"],
+      "port": 3002,
+      "autoPort": false
+    }
+  ]
+}

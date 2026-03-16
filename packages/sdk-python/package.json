@@ -1,0 +1,10 @@
+{
+  "name": "@agentcomms/sdk-python",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "echo \"python package — no ts build\"",
+    "test": "echo \"no tests yet\"",
+    "clean": "echo \"nothing to clean\""
+  }
+}

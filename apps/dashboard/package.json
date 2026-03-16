@@ -1,0 +1,26 @@
+{
+  "name": "@agentcomms/dashboard",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --port 3002",
+    "test": "echo \"no tests yet\"",
+    "clean": "rm -rf .next"
+  },
+  "dependencies": {
+    "@agentcomms/core": "workspace:*",
+    "@tailwindcss/postcss": "^4.2.1",
+    "next": "^14.2.0",
+    "postcss": "^8.5.8",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.7.0"
+  }
+}
